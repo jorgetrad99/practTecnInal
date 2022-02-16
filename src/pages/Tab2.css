@@ -1,0 +1,22 @@
+.buttons {
+  display: flex;
+  align-content: flex-end;
+  /* flex-direction: row;
+  justify-content: space-evenly; */
+  height: 100%;
+  /* align-items: center; */
+  /* align-content: center; */
+  /* justify-items: center; */
+  margin: 0 auto;
+  text-align: center;
+}
+
+ion-grid {
+  margin: auto 0;
+}
+
+ion-button {
+  font-size: 2.5rem;
+  width: 5rem;
+  height: 5rem;
+}

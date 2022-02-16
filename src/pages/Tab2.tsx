@@ -1,8 +1,14 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
+import { IonButton, IonCol, IonContent, IonGrid, IonHeader, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
+import { useState } from 'react';
+
 import './Tab2.css';
 
 const Tab2: React.FC = () => {
+  const [ aButtonState, setAButtonState ] = useState(false);
+  const [ bButtonState, setBButtonState ] = useState(false);
+  const [ cButtonState, setCButtonState ] = useState(false);
+  const [ dButtonState, setDButtonState ] = useState(false);
+
   return (
     <IonPage>
       <IonHeader>
@@ -11,12 +17,28 @@ const Tab2: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Tab 2</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <ExploreContainer name="Tab 2 page" />
+        <div className='buttons'>
+        <IonGrid>
+          <IonRow>
+            <IonCol>
+            <IonButton shape="round" size="large">A</IonButton>
+            </IonCol>
+            <IonCol>
+              <IonButton shape="round" size="large">B</IonButton>
+            </IonCol>
+            <IonCol>
+              <IonButton shape="round" size="large">C</IonButton>
+            </IonCol>
+            <IonCol>
+              <IonButton shape="round" size="large">D</IonButton>
+            </IonCol>
+          </IonRow>
+        </IonGrid>
+         {/*  <IonButton shape="round" size="large">A</IonButton> */}
+          {/* <IonButton shape="round" size="large">B</IonButton>
+          <IonButton shape="round" size="large">C</IonButton>
+          <IonButton shape="round" size="large">D</IonButton> */}
+        </div>
       </IonContent>
     </IonPage>
   );
