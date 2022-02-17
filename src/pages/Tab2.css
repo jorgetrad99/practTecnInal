@@ -15,7 +15,19 @@ ion-grid {
   margin: auto 0;
 }
 
+ion-list {
+  margin: 0 auto;
+  text-align: center;
+}
+
+ion-item {
+  max-width: 50rem;
+}
+
 ion-button {
+}
+
+.controllers {
   font-size: 2.5rem;
   width: 5rem;
   height: 5rem;
