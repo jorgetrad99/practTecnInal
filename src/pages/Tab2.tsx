@@ -1,6 +1,8 @@
-import { IonAlert, IonButton, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonList, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
+import { useIonLoading, IonAlert, IonButton, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { BluetoothSerial } from '@awesome-cordova-plugins/bluetooth-serial';
+import { chevronDownOutline } from 'ionicons/icons';
+import { chevronUpOutline } from 'ionicons/icons';
 
 import './Tab2.css';
 
@@ -12,15 +14,23 @@ import './Tab2.css';
 const Tab2: React.FC = () => {
   const bluetoothSerial = BluetoothSerial;
 
+  const [present, dismiss] = useIonLoading();
+
   const [ aButtonState, setAButtonState ] = useState(false);
   const [ bButtonState, setBButtonState ] = useState(false);
   const [ cButtonState, setCButtonState ] = useState(false);
   const [ dButtonState, setDButtonState ] = useState(false);
 
-  const [ devices, setDevices ] = useState<any[]>([]);
+  const [ pairedDevices, setPairedDevices ] = useState<any[]>([]);
+  const [ pairedDevicesToggle, setPairedDevicesToggle ] = useState(false);
+
+  const [ unpairedDevices, setUnpairedDevices ] = useState<any[]>([]);
+  const [ unpairedDevicesToggle, setUnpairedDevicesToggle ] = useState(false);
 
   const [showAlert2, setShowAlert2] = useState(false);
   const [ message, setMessage ]  = useState('');
+
+  const [ isConnected, setIsConnected ] = useState(false);
 
   const connectBluetooth = () => {
     
@@ -35,20 +45,76 @@ const Tab2: React.FC = () => {
     
   };
 
-  const listDevices = () => {
+  const listPairedDevices = () => {
     bluetoothSerial.list().then((response) => {
       if(response.length > 0) {
-        setMessage('Some devices found');
-        setDevices(response);
+        setPairedDevices(response);
+        if(pairedDevicesToggle) {
+          setPairedDevices([]);
+        }
+        setPairedDevicesToggle(!pairedDevicesToggle);
       }
     }, (error) => {
       setMessage(error);
     })
   }
 
-  useEffect(() => {
+  const listUnpairedDevices = async () => {
     
-  }, [ message, devices ]);
+    await bluetoothSerial.discoverUnpaired().then((response) => {
+      if(response.length > 0) {
+        setMessage('Some unpaired devices found');
+        setUnpairedDevices(response);
+        
+        if(pairedDevicesToggle) {
+          setUnpairedDevices([]);
+        }
+        setUnpairedDevicesToggle(!unpairedDevicesToggle);
+      } else {
+        setMessage('No unpaired devices');
+      }
+    }, (error) => {
+      setMessage(error);
+    })
+    if(unpairedDevices.length < 1) {
+      present('Loading', 2000, 'dots')
+    }
+  }
+
+  const connectDevice = (address: any) => {
+    bluetoothSerial.connect(address).subscribe(
+      () => {
+        deviceConnected();
+      }, (error) => {
+        setMessage(error);
+      },
+    );
+  }
+
+  const deviceConnected = () => {
+    bluetoothSerial.subscribe('/n').subscribe((success) => {
+      /* setMessage('The device has been succesfully connected'); */
+      setMessage(success);
+    }, error => {
+      setMessage(error);
+    })
+  }
+
+  const sendData = (data: String) => {
+    bluetoothSerial.write(data).then(response => {
+      setMessage(response);
+    }, (error) => {
+      setMessage(error);
+    })
+  }
+
+  useEffect(() => {
+    bluetoothSerial.isConnected().then(() => {
+      setIsConnected(true);
+    }, () => {
+      setIsConnected(false);
+    })
+  }, [ message, pairedDevices, unpairedDevices, isConnected ]);
  
   return (
     
@@ -66,7 +132,6 @@ const Tab2: React.FC = () => {
               onDidDismiss={() => {
                   setMessage('');
                   setShowAlert2(false)
-
                 }
               }
               cssClass='my-custom-class'
@@ -78,37 +143,58 @@ const Tab2: React.FC = () => {
           )
         }
         <IonButton onClick={connectBluetooth}>Is Bluetooth on?</IonButton>
-        <IonButton onClick={listDevices}>Devices List</IonButton>
-        {devices.length > 0 && (
+        <IonButton onClick={listPairedDevices}>Paired devices List { pairedDevicesToggle ? <IonIcon icon={chevronUpOutline}></IonIcon> : <IonIcon icon={chevronDownOutline}></IonIcon> }</IonButton>
+        <IonButton onClick={listUnpairedDevices}>Unpaired Devices List { unpairedDevicesToggle ? <IonIcon icon={chevronUpOutline}></IonIcon> : <IonIcon icon={chevronDownOutline}></IonIcon> }</IonButton>
+        {pairedDevices.length > 0 && (
           <div>
-            <h3>Devices list</h3>
+            <h3>Paired Devices List</h3>
             <IonList>
-            {devices.map((device) => {
+            {pairedDevices.map((device: any) => {
               return (
                 <IonItem>
                   <IonLabel>{device.name}</IonLabel>
                   <IonLabel>{device.address}</IonLabel>
+                  <IonButton onClick={() => connectDevice(device.address)}>Connect</IonButton>
                 </IonItem>
               )
             })}
             </IonList>
           </div>
         )}
+        {unpairedDevices.length > 0 && (
+          <div>
+            <h3>Unpaired Devices List</h3>
+            <IonList>
+            {unpairedDevices.map((device: any) => {
+              return (
+                <IonItem>
+                  <IonLabel>{device.name}</IonLabel>
+                  <IonLabel>{device.address}</IonLabel>
+                  <IonButton onClick={() => connectDevice(device.address)}>Connect</IonButton>
+                </IonItem>
+              )
+            })}
+            </IonList>
+          </div>
+        )}
+        { isConnected && (<p>Device connected</p>)}
+        { !isConnected && (<p>Device not connected</p>)}
+        
         
         <div className='buttons'>
         <IonGrid>
           <IonRow>
             <IonCol>
-            <IonButton shape="round" size="large" className='controllers'>A</IonButton>
+            <IonButton shape="round" size="large" className='controllers' onClick={() => sendData('A')}>A</IonButton>
             </IonCol>
             <IonCol>
-              <IonButton shape="round" size="large" className='controllers'>B</IonButton>
+              <IonButton shape="round" size="large" className='controllers' onClick={() => sendData('B')}>B</IonButton>
             </IonCol>
             <IonCol>
-              <IonButton shape="round" size="large" className='controllers'>C</IonButton>
+              <IonButton shape="round" size="large" className='controllers' onClick={() => sendData('C')}>C</IonButton>
             </IonCol>
             <IonCol>
-              <IonButton shape="round" size="large" className='controllers'>D</IonButton>
+              <IonButton shape="round" size="large" className='controllers' onClick={() => sendData('D')}>D</IonButton>
             </IonCol>
           </IonRow>
         </IonGrid>
