@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "pracTecnInal",
+	"webDir": "build",
+	"bundledWebRuntime": false
+}

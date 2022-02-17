@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@awesome-cordova-plugins/bluetooth-serial": "^5.39.1",
+    "@capacitor/android": "3.4.1",
     "@capacitor/app": "1.1.0",
     "@capacitor/core": "3.4.1",
     "@capacitor/haptics": "1.1.4",
@@ -45,6 +46,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "sync": "ionic build && npx cap sync",
+    "copy": "ionic build && npx cap copy",
     "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons)/)'",
     "eject": "react-scripts eject"
   },
