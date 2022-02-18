@@ -15,6 +15,14 @@ ion-grid {
   margin: auto 0;
 }
 
+#is-connected {
+  color: var(--ion-color-success);
+}
+
+#is-not-connected {
+  color: var(--ion-color-danger);
+}
+
 ion-list {
   margin: 0 auto;
   text-align: center;
@@ -29,6 +37,10 @@ ion-button {
 
 .controllers {
   font-size: 2.5rem;
-  width: 5rem;
-  height: 5rem;
+  width: 8rem;
+  height: 8rem;
+  --border-style: solid;
+  --border-width: 5px;
+  --border-color: var(--ion-color-medium);
+  --background: var(--ion-color-danger-tint);
 }

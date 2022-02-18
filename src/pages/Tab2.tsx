@@ -6,11 +6,6 @@ import { chevronUpOutline } from 'ionicons/icons';
 
 import './Tab2.css';
 
-/* interface Device {
-  name: string,
-  address: string
-} */
-
 const Tab2: React.FC = () => {
   const bluetoothSerial = BluetoothSerial;
 
@@ -24,13 +19,12 @@ const Tab2: React.FC = () => {
   const [ pairedDevices, setPairedDevices ] = useState<any[]>([]);
   const [ pairedDevicesToggle, setPairedDevicesToggle ] = useState(false);
 
-  const [ unpairedDevices, setUnpairedDevices ] = useState<any[]>([]);
-  const [ unpairedDevicesToggle, setUnpairedDevicesToggle ] = useState(false);
-
   const [showAlert2, setShowAlert2] = useState(false);
   const [ message, setMessage ]  = useState('');
 
   const [ isConnected, setIsConnected ] = useState(false);
+
+  const [ dataSent, setDataSent ] = useState<String>('');
 
   const connectBluetooth = () => {
     
@@ -59,32 +53,11 @@ const Tab2: React.FC = () => {
     })
   }
 
-  const listUnpairedDevices = async () => {
-    
-    await bluetoothSerial.discoverUnpaired().then((response) => {
-      if(response.length > 0) {
-        setMessage('Some unpaired devices found');
-        setUnpairedDevices(response);
-        
-        if(pairedDevicesToggle) {
-          setUnpairedDevices([]);
-        }
-        setUnpairedDevicesToggle(!unpairedDevicesToggle);
-      } else {
-        setMessage('No unpaired devices');
-      }
-    }, (error) => {
-      setMessage(error);
-    })
-    if(unpairedDevices.length < 1) {
-      present('Loading', 2000, 'dots')
-    }
-  }
-
   const connectDevice = (address: any) => {
     bluetoothSerial.connect(address).subscribe(
       () => {
         deviceConnected();
+        setIsConnected(true)
       }, (error) => {
         setMessage(error);
       },
@@ -93,28 +66,34 @@ const Tab2: React.FC = () => {
 
   const deviceConnected = () => {
     bluetoothSerial.subscribe('/n').subscribe((success) => {
-      /* setMessage('The device has been succesfully connected'); */
-      setMessage(success);
+      setMessage('The device has been succesfully connected: ' + success);
     }, error => {
       setMessage(error);
     })
   }
 
   const sendData = (data: String) => {
-    bluetoothSerial.write(data).then(response => {
-      setMessage(response);
+    bluetoothSerial.write(data).then(() => {
+      if(dataSent.length === 0) {
+        setDataSent(data);
+      }
+      setTimeout(() => {
+        setDataSent('');
+      }, 500);
     }, (error) => {
       setMessage(error);
     })
   }
 
+  bluetoothSerial.isConnected().then(() => {
+    setIsConnected(true);
+  }, () => {
+    setIsConnected(false);
+  })
+
   useEffect(() => {
-    bluetoothSerial.isConnected().then(() => {
-      setIsConnected(true);
-    }, () => {
-      setIsConnected(false);
-    })
-  }, [ message, pairedDevices, unpairedDevices, isConnected ]);
+    
+  }, [ message, pairedDevices, isConnected, aButtonState, bButtonState, cButtonState, dButtonState ]);
  
   return (
     
@@ -136,7 +115,6 @@ const Tab2: React.FC = () => {
               }
               cssClass='my-custom-class'
               header={'Alert'}
-              /* subHeader={'Subtitle'} */
               message={message}
               buttons={['Ok']}
             /> 
@@ -144,7 +122,6 @@ const Tab2: React.FC = () => {
         }
         <IonButton onClick={connectBluetooth}>Is Bluetooth on?</IonButton>
         <IonButton onClick={listPairedDevices}>Paired devices List { pairedDevicesToggle ? <IonIcon icon={chevronUpOutline}></IonIcon> : <IonIcon icon={chevronDownOutline}></IonIcon> }</IonButton>
-        <IonButton onClick={listUnpairedDevices}>Unpaired Devices List { unpairedDevicesToggle ? <IonIcon icon={chevronUpOutline}></IonIcon> : <IonIcon icon={chevronDownOutline}></IonIcon> }</IonButton>
         {pairedDevices.length > 0 && (
           <div>
             <h3>Paired Devices List</h3>
@@ -161,40 +138,143 @@ const Tab2: React.FC = () => {
             </IonList>
           </div>
         )}
-        {unpairedDevices.length > 0 && (
-          <div>
-            <h3>Unpaired Devices List</h3>
-            <IonList>
-            {unpairedDevices.map((device: any) => {
-              return (
-                <IonItem>
-                  <IonLabel>{device.name}</IonLabel>
-                  <IonLabel>{device.address}</IonLabel>
-                  <IonButton onClick={() => connectDevice(device.address)}>Connect</IonButton>
-                </IonItem>
-              )
-            })}
-            </IonList>
-          </div>
-        )}
-        { isConnected && (<p>Device connected</p>)}
-        { !isConnected && (<p>Device not connected</p>)}
+        { isConnected && (<p id="is-connected">Device connected</p>)}
+        { !isConnected && (<p id="is-not-connected">Device not connected</p>)}
         
-        
+        <IonItem>
+        {
+          dataSent.length > 0 && (
+            <IonLabel>Sending "{dataSent}" to the device</IonLabel>
+          ) 
+        }
+        </IonItem>
+
         <div className='buttons'>
         <IonGrid>
           <IonRow>
             <IonCol>
-            <IonButton shape="round" size="large" className='controllers' onClick={() => sendData('A')}>A</IonButton>
+              { aButtonState ? (
+                  <IonButton shape="round" size="large" className='controllers' 
+                    style={{ '--background': 'var(--ion-color-danger-shade)' }} 
+                    onClick={() => {
+                      bluetoothSerial.isConnected().then(() => {
+                        sendData('A')
+                        setAButtonState(!aButtonState);
+                      }, () => {
+                        setMessage('Device not connnected');
+                      })
+                   }
+                  }>
+                    A
+                  </IonButton>
+                ) : (
+                  <IonButton shape="round" size="large" className='controllers' 
+                    onClick={() => {
+                      bluetoothSerial.isConnected().then(() => {
+                        sendData('A')
+                        setAButtonState(!aButtonState);
+                      }, () => {
+                        setMessage('Device not connnected');
+                      })
+                   }
+                  }>
+                    A
+                  </IonButton>
+                )
+              }
             </IonCol>
             <IonCol>
-              <IonButton shape="round" size="large" className='controllers' onClick={() => sendData('B')}>B</IonButton>
+            { bButtonState ? (
+                  <IonButton shape="round" size="large" className='controllers' 
+                    style={{ '--background': 'var(--ion-color-danger-shade)' }} 
+                    onClick={() => {
+                      bluetoothSerial.isConnected().then(() => {
+                        sendData('B')
+                        setBButtonState(!bButtonState);
+                      }, () => {
+                        setMessage('Device not connnected');
+                      })
+                   }
+                  }>
+                    B
+                  </IonButton>
+                ) : (
+                  <IonButton shape="round" size="large" className='controllers' 
+                    onClick={() => {
+                      bluetoothSerial.isConnected().then(() => {
+                        sendData('B')
+                        setBButtonState(!bButtonState);
+                      }, () => {
+                        setMessage('Device not connnected');
+                      })
+                   }
+                  }>
+                    B
+                  </IonButton>
+                )
+              }
             </IonCol>
             <IonCol>
-              <IonButton shape="round" size="large" className='controllers' onClick={() => sendData('C')}>C</IonButton>
+            { cButtonState ? (
+                  <IonButton shape="round" size="large" className='controllers' 
+                    style={{ '--background': 'var(--ion-color-danger-shade)' }} 
+                    onClick={() => {
+                      bluetoothSerial.isConnected().then(() => {
+                        sendData('C')
+                        setCButtonState(!cButtonState);
+                      }, () => {
+                        setMessage('Device not connnected');
+                      })
+                   }
+                  }>
+                    C
+                  </IonButton>
+                ) : (
+                  <IonButton shape="round" size="large" className='controllers' 
+                    onClick={() => {
+                      bluetoothSerial.isConnected().then(() => {
+                        sendData('C')
+                        setCButtonState(!cButtonState);
+                      }, () => {
+                        setMessage('Device not connnected');
+                      })
+                   }
+                  }>
+                    C
+                  </IonButton>
+                )
+              }
             </IonCol>
             <IonCol>
-              <IonButton shape="round" size="large" className='controllers' onClick={() => sendData('D')}>D</IonButton>
+            { dButtonState ? (
+                  <IonButton shape="round" size="large" className='controllers' 
+                    style={{ '--background': 'var(--ion-color-danger-shade)' }} 
+                    onClick={() => {
+                      bluetoothSerial.isConnected().then(() => {
+                        sendData('D')
+                        setDButtonState(!dButtonState);
+                      }, () => {
+                        setMessage('Device not connnected');
+                      })
+                   }
+                  }>
+                    D
+                  </IonButton>
+                ) : (
+                  <IonButton shape="round" size="large" className='controllers' 
+                    onClick={() => {
+                      bluetoothSerial.isConnected().then(() => {
+                        sendData('D')
+                        setDButtonState(!dButtonState);
+                      }, () => {
+                        setMessage('Device not connnected');
+                      })
+                   }
+                  }>
+                    D
+                  </IonButton>
+                )
+              }
             </IonCol>
           </IonRow>
         </IonGrid>
