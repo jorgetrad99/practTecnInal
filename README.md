@@ -16,14 +16,6 @@ Over time, this repository will be updated and new practices on the subject will
     - [Procedure Project 1](#procedure-project-1)
     - [App Preview Project 1](#app-preview-project-1)
 
-# Getting Started
-
-- [Download the installer](https://nodejs.org/) for Node LTS.
-- Install the ionic CLI globally on your terminal: `npm install -g ionic`
-- Clone this repository: `git clone https://github.com/jorgetrad99/practTecnInal.git`.
-- Run `npm install` from the project root.
-- Run `npm serve` in a terminal from the project root.
-
 # Used tools
 
 ![HTML](https://img.shields.io/badge/HTML-239120?style=for-the-badge&logo=html5&logoColor=white)
@@ -42,6 +34,14 @@ Over time, this repository will be updated and new practices on the subject will
 - React.js. It is a Javascript library that helps in the creation of user interfaces.
 - Ionic. It is a development framework that helps create user interfaces for hybrid mobile applications with a wide range of native components for IOS, Android and Electron.
 - Capacitor. It is a framework that allows working with the native functions of mobile devices.
+
+# Getting Started
+
+- [Download the installer](https://nodejs.org/) for Node LTS.
+- Install the ionic CLI globally on your terminal: `npm install -g ionic`
+- Clone this repository: `git clone https://github.com/jorgetrad99/practTecnInal.git`.
+- Run `npm install` from the project root.
+- Run `npm serve` in a terminal from the project root.
 
 # Projects
 
