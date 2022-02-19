@@ -48,6 +48,7 @@
     "build": "react-scripts build",
     "sync": "ionic build && npx cap sync",
     "copy": "ionic build && npx cap copy",
+    "serve": "ionic serve",
     "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons)/)'",
     "eject": "react-scripts eject"
   },

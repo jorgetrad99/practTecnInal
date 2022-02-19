@@ -27,10 +27,6 @@ const Tab2: React.FC = () => {
   const [ dataSent, setDataSent ] = useState<String>('');
 
   const connectBluetooth = () => {
-    
-    /* bluetoothSerial.connect('98:DA:20:00:E8:C2'); */
-    
-
     bluetoothSerial.isEnabled().then(() => {
       setMessage('On');
     }, () => {
