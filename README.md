@@ -220,6 +220,4 @@ import {
 
 ### App Preview Project 1
 
-<img src="https://i.ibb.co/QbvxTM8/Screenshot-20220218-184506-01.jpg" alt="drawing" width="200"/>
-<img src="https://i.ibb.co/HDZWvKz/Screenshot-20220218-184513-01.jpg" alt="drawing" width="200"/>
-<img src="https://i.ibb.co/NTKvwcF/Screenshot-20220218-184520-01.jpg" alt="drawing" width="200"/>
+<img src="https://i.ibb.co/QbvxTM8/Screenshot-20220218-184506-01.jpg" alt="drawing" width="200"/> <img src="https://i.ibb.co/HDZWvKz/Screenshot-20220218-184513-01.jpg" alt="drawing" width="200"/> <img src="https://i.ibb.co/NTKvwcF/Screenshot-20220218-184520-01.jpg" alt="drawing" width="200"/>
